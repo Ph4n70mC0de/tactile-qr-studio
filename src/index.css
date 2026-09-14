@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neu-base: #e0e5ec;
+  --color-neu-dark: #a3b1c6;
+  --color-neu-light: #ffffff;
+  --color-neu-text: #4a5568;
+  --color-neu-text-muted: #718096;
+  --color-neu-accent: #3b82f6;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-neu-base);
+    color: var(--color-neu-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .shadow-neu {
+    box-shadow: 6px 6px 12px var(--color-neu-dark), -6px -6px 12px var(--color-neu-light);
+  }
+  .shadow-neu-hover {
+    box-shadow: 8px 8px 16px var(--color-neu-dark), -8px -8px 16px var(--color-neu-light);
+  }
+  .shadow-neu-pressed {
+    box-shadow: inset 4px 4px 8px var(--color-neu-dark), inset -4px -4px 8px var(--color-neu-light);
+  }
+  .shadow-neu-sm {
+    box-shadow: 4px 4px 8px var(--color-neu-dark), -4px -4px 8px var(--color-neu-light);
+  }
+  .shadow-neu-pressed-sm {
+    box-shadow: inset 2px 2px 4px var(--color-neu-dark), inset -2px -2px 4px var(--color-neu-light);
+  }
+  .neu-border {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+}
