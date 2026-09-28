@@ -1,6 +1,8 @@
+import { useState, useRef } from 'react';
 import { QRAppearance } from '../types';
 import { Label } from './ui/Label';
 import { Slider } from './ui/Slider';
+import { Image } from 'lucide-react';
 import {
   MIN_QR_SIZE,
   MAX_QR_SIZE,
@@ -14,6 +16,8 @@ interface QRAppearanceFormProps {
 }
 
 export function QRAppearanceForm({ appearance, onChange }: QRAppearanceFormProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-2 gap-6">
@@ -161,18 +165,68 @@ export function QRAppearanceForm({ appearance, onChange }: QRAppearanceFormProps
         </div>
 
         <div className="space-y-3">
-          <Label htmlFor="logo-url">Center Logo URL (Optional)</Label>
+          <Label htmlFor="logo-file">Center Logo (Optional)</Label>
+          {appearance.logoFile ? (
+            <div className="flex items-center gap-4 rounded-xl bg-neu-base px-4 py-3 shadow-neu-pressed neu-border">
+              <img
+                src={URL.createObjectURL(appearance.logoFile)}
+                alt="Logo preview"
+                className="h-10 w-10 rounded object-cover"
+              />
+              <span className="text-sm text-neu-text truncate flex-1">{appearance.logoFile.name}</span>
+              <button
+                type="button"
+                onClick={() => onChange({ logoFile: null })}
+                className="text-xs text-neu-text-muted hover:text-neu-text underline"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <div
+              className={`flex flex-col items-center justify-center gap-2 rounded-xl bg-neu-base px-4 py-6 neu-border cursor-pointer transition-colors ${
+                isDragging ? 'shadow-neu-pressed text-neu-accent' : 'shadow-neu-pressed hover:shadow-neu-hover'
+              }`}
+              tabIndex={0}
+              role="button"
+              onClick={() => fileInputRef.current?.click()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragging(true);
+              }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                  onChange({ logoFile: file });
+                }
+              }}
+            >
+              <Image className="h-8 w-8 text-neu-text-muted" />
+              <span className="text-sm text-neu-text-muted">Drop an image here or click to browse</span>
+            </div>
+          )}
           <input
-            id="logo-url"
-            type="url"
-            placeholder="https://..."
-            value={appearance.logoUrl || ''}
-            onChange={(e) => onChange({ logoUrl: e.target.value })}
-            aria-invalid={!!appearance.logoUrl && !appearance.logoUrl.startsWith('http')}
-            className="flex w-full rounded-xl bg-neu-base px-4 py-3 text-sm text-neu-text placeholder:text-neu-text-muted shadow-neu-pressed neu-border outline-none transition-all duration-200 focus:ring-2 focus:ring-neu-accent/50"
+            ref={fileInputRef}
+            id="logo-file"
+            type="file"
+            accept="image/*"
+            className="sr-only"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onChange({ logoFile: file });
+            }}
           />
 
-          {appearance.logoUrl && appearance.logoUrl.trim() && (
+          {appearance.logoFile && (
             <Slider
               id="logo-size"
               label="Logo Size"

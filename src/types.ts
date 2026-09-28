@@ -47,7 +47,7 @@ export interface QRAppearance {
   moduleStyle: 'square' | 'dots' | 'rounded';
   finderStyle: 'square' | 'dot' | 'extra-rounded';
   errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H';
-  logoUrl?: string;
+  logoFile?: File | null;
   logoSize: number; // multiplier of the QR size, e.g. 0.4
 }
 

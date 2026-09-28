@@ -21,6 +21,7 @@ export const defaultAppearance: QRAppearance = {
   moduleStyle: 'square',
   finderStyle: 'square',
   errorCorrectionLevel: 'M',
+  logoFile: null,
   logoSize: DEFAULT_LOGO_SIZE,
 };
 

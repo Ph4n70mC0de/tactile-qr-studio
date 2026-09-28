@@ -23,7 +23,7 @@ export function createResult(messages: QRValidationMessage[]): ValidationResult 
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[+]?[0-9\s().-]{7,20}$/;
+const PHONE_REGEX = /^09\d{9}$/;
 
 export function validateText(text: string): ValidationResult {
   const messages: QRValidationMessage[] = [];
@@ -108,7 +108,7 @@ export function validatePhone(phone: string): ValidationResult {
   }
 
   if (!PHONE_REGEX.test(phone.trim())) {
-    messages.push({ severity: 'error', code: 'phone_invalid', message: 'Please enter a valid phone number using digits, spaces, +, or -.' });
+    messages.push({ severity: 'error', code: 'phone_invalid', message: 'Enter an 11-digit mobile number starting with 09.' });
   } else {
     messages.push({ severity: 'info', code: 'phone_valid', message: 'Phone number is valid.' });
   }
@@ -210,12 +210,12 @@ export function validateAppearance(appearance: QRAppearance, payload: Payload): 
     });
   }
 
-  if (appearance.logoUrl) {
+  if (appearance.logoFile) {
     if (appearance.errorCorrectionLevel !== 'H') {
       messages.push({
         severity: 'warning',
         code: 'logo_low_error_correction',
-        message: 'When using a logo, Error Correction level “H” is recommended for better scan reliability.',
+        message: 'When using a logo, Error Correction level "H" is recommended for better scan reliability.',
       });
     }
 
@@ -225,13 +225,6 @@ export function validateAppearance(appearance: QRAppearance, payload: Payload): 
         code: 'logo_too_large',
         message: `Logo size (${Math.round(appearance.logoSize * 100)}%) may be too large. A maximum of ${Math.round(MAX_LOGO_RATIO * 100)}% is recommended.`,
       });
-    }
-
-    const logoUrl = appearance.logoUrl.trim();
-    if (!logoUrl) {
-      messages.push({ severity: 'error', code: 'logo_url_empty', message: 'Logo URL cannot be empty.' });
-    } else if (!/^https?:\/\//i.test(logoUrl)) {
-      messages.push({ severity: 'error', code: 'logo_url_invalid', message: 'Logo URL must start with http:// or https://.' });
     }
   }
 
@@ -270,8 +263,8 @@ export function validateExport(appearance: QRAppearance, payload: Payload, forma
     messages.push({ severity: 'warning', code: 'export_png_small', message: 'PNG export at small sizes may appear pixelated. Consider increasing QR size.' });
   }
 
-  if (appearance.logoUrl && !appearance.transparentBackground) {
-    messages.push({ severity: 'info', code: 'logo_export', message: 'Logo will be included in the exported image. Ensure the logo source is publicly accessible.' });
+  if (appearance.logoFile && !appearance.transparentBackground) {
+    messages.push({ severity: 'info', code: 'logo_export', message: 'Logo will be included in the exported image.' });
   }
 
   return messages;

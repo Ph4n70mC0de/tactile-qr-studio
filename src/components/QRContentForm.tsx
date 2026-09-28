@@ -1,7 +1,27 @@
+import { useState } from 'react';
 import { Payload } from '../types';
 import { Input } from './ui/Input';
 import { Label } from './ui/Label';
 import { Textarea } from './ui/Textarea';
+
+function EyeIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function EyeOffIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12" />
+      <path d="M6.61 6.61A10.08 10.08 0 0 1 12 4c5.52 0 10 7 10 7a10.08 10.08 0 0 1-1.39 3.39" />
+      <path d="M2 2l20 20" />
+    </svg>
+  );
+}
 
 interface QRContentFormProps {
   payload: Payload;
@@ -20,6 +40,8 @@ function charHintClass(current: number, max: number): string {
 }
 
 export function QRContentForm({ payload, onChange }: QRContentFormProps) {
+  const [showPassword, setShowPassword] = useState(false);
+
   if (payload.type === 'text') {
     const charCount = payload.text.length;
     const textHintId = 'text-char-count';
@@ -33,14 +55,8 @@ export function QRContentForm({ payload, onChange }: QRContentFormProps) {
             value={payload.text}
             aria-invalid={charCount === 0}
             aria-describedby={charCount > 0 ? textHintId : undefined}
-            aria-errormessage={charCount === 0 ? 'text-error' : undefined}
             onChange={(e) => onChange({ ...payload, text: e.target.value })}
-          />
-          {charCount === 0 && (
-            <p id="text-error" className="text-xs text-red-500" role="alert">
-              Text content is required.
-            </p>
-          )}
+            />
           {charCount > 0 && (
             <p id={textHintId} className={`text-xs ${charHintClass(charCount, MAX_TEXT_LENGTH)}`} aria-live="polite">
               {charCount}/{MAX_TEXT_LENGTH} characters
@@ -96,10 +112,13 @@ export function QRContentForm({ payload, onChange }: QRContentFormProps) {
           <Input
             id="email-input"
             type="email"
-            placeholder="contact@example.com"
+            placeholder="contact@gmail.com"
             value={payload.email}
             onChange={(e) => onChange({ ...payload, email: e.target.value })}
           />
+          {payload.email && payload.email.trim().toLowerCase().endsWith('@gmail.com') && (
+            <p className="text-xs text-neu-text-muted">Gmail address detected</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="subject-input">Subject (Optional)</Label>
@@ -145,9 +164,14 @@ export function QRContentForm({ payload, onChange }: QRContentFormProps) {
           <Input
             id="phone-input"
             type="tel"
-            placeholder="+1 555 123 4567"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            placeholder="09XX XXX XXXX"
             value={payload.phone}
-            onChange={(e) => onChange({ ...payload, phone: e.target.value })}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+              onChange({ ...payload, phone: digits });
+            }}
           />
         </div>
       </div>
@@ -181,20 +205,33 @@ export function QRContentForm({ payload, onChange }: QRContentFormProps) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="wifi-password">Password</Label>
-          <Input
-            id="wifi-password"
-            type="password"
-            placeholder="secretpassword"
-            maxLength={MAX_WIFI_PASSWORD}
-            value={payload.password ?? ''}
-            disabled={payload.encryption === 'nopass'}
-            aria-describedby={
-              [showHint && passwordHintId, hasSpecialChars && specialCharsId]
-                .filter(Boolean)
-                .join(' ') || undefined
-            }
-            onChange={(e) => onChange({ ...payload, password: e.target.value })}
-          />
+          <div className="relative">
+            <Input
+              id="wifi-password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="secretpassword"
+              maxLength={MAX_WIFI_PASSWORD}
+              value={payload.password ?? ''}
+              disabled={payload.encryption === 'nopass'}
+              className={payload.encryption !== 'nopass' ? 'pr-10' : undefined}
+              aria-describedby={
+                [showHint && passwordHintId, hasSpecialChars && specialCharsId]
+                  .filter(Boolean)
+                  .join(' ') || undefined
+              }
+              onChange={(e) => onChange({ ...payload, password: e.target.value })}
+            />
+            {payload.encryption !== 'nopass' && (
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-neu-text-muted hover:text-neu-text"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOffIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+              </button>
+            )}
+          </div>
           {showHint && (
             <p id={passwordHintId} className={`text-xs ${charHintClass(passwordCount, MAX_WIFI_PASSWORD)}`} aria-live="polite">
               {passwordCount}/{MAX_WIFI_PASSWORD} characters
