@@ -103,38 +103,33 @@ describe('validatePhone', () => {
     expect(result.messages.some(m => m.code === 'phone_empty')).toBe(true);
   });
 
-  it('accepts simple phone number', () => {
-    const result = validatePhone('1234567890');
+  it('accepts valid 09-starting 11-digit phone number', () => {
+    const result = validatePhone('09123456789');
     expect(result.isValid).toBe(true);
   });
 
-  it('accepts phone with international prefix', () => {
-    const result = validatePhone('+1 555 123 4567');
-    expect(result.isValid).toBe(true);
+  it('rejects phone not starting with 09', () => {
+    const result = validatePhone('12345678901');
+    expect(result.isValid).toBe(false);
   });
 
-  it('accepts phone with dashes', () => {
-    const result = validatePhone('555-123-4567');
-    expect(result.isValid).toBe(true);
+  it('rejects phone shorter than 11 digits', () => {
+    const result = validatePhone('0912345678');
+    expect(result.isValid).toBe(false);
   });
 
-  it('accepts phone with parentheses', () => {
-    const result = validatePhone('(555) 123-4567');
-    expect(result.isValid).toBe(true);
-  });
-
-  it('rejects phone too short', () => {
-    const result = validatePhone('123');
+  it('rejects phone longer than 11 digits', () => {
+    const result = validatePhone('091234567890');
     expect(result.isValid).toBe(false);
   });
 
   it('rejects phone with letters', () => {
-    const result = validatePhone('555-ABC-DEFG');
+    const result = validatePhone('0912ABCDEFG');
     expect(result.isValid).toBe(false);
   });
 
-  it('rejects phone with special characters', () => {
-    const result = validatePhone('555@123#4567');
+  it('rejects phone with spaces and symbols', () => {
+    const result = validatePhone('0912 345-678');
     expect(result.isValid).toBe(false);
   });
 });
@@ -246,7 +241,7 @@ describe('validateAppearance', () => {
   it('warns when logo present without H error correction', () => {
     const appearance: QRAppearance = {
       ...defaultAppearance,
-      logoUrl: 'https://example.com/logo.png',
+      logoFile: new File([''], 'logo.png', { type: 'image/png' }),
       errorCorrectionLevel: 'M',
     };
     const results = validateAppearance(appearance, basePayload);
@@ -256,7 +251,7 @@ describe('validateAppearance', () => {
   it('does not warn about error correction when logo with H', () => {
     const appearance: QRAppearance = {
       ...defaultAppearance,
-      logoUrl: 'https://example.com/logo.png',
+      logoFile: new File([''], 'logo.png', { type: 'image/png' }),
       errorCorrectionLevel: 'H',
     };
     const results = validateAppearance(appearance, basePayload);
@@ -266,24 +261,12 @@ describe('validateAppearance', () => {
   it('warns when logo is too large', () => {
     const appearance: QRAppearance = {
       ...defaultAppearance,
-      logoUrl: 'https://example.com/logo.png',
+      logoFile: new File([''], 'logo.png', { type: 'image/png' }),
       errorCorrectionLevel: 'H',
       logoSize: 0.5,
     };
     const results = validateAppearance(appearance, basePayload);
     expect(results.some(m => m.code === 'logo_too_large')).toBe(true);
-  });
-
-  it('errors on empty logo URL', () => {
-    const appearance: QRAppearance = { ...defaultAppearance, logoUrl: '  ' };
-    const results = validateAppearance(appearance, basePayload);
-    expect(results.some(m => m.code === 'logo_url_empty')).toBe(true);
-  });
-
-  it('errors on non-http logo URL', () => {
-    const appearance: QRAppearance = { ...defaultAppearance, logoUrl: 'ftp://example.com/logo.png' };
-    const results = validateAppearance(appearance, basePayload);
-    expect(results.some(m => m.code === 'logo_url_invalid')).toBe(true);
   });
 
   it('warns on dense payload', () => {
@@ -344,7 +327,7 @@ describe('validateExport', () => {
   it('notes logo in export message when present', () => {
     const appearance: QRAppearance = {
       ...defaultAppearance,
-      logoUrl: 'https://example.com/logo.png',
+      logoFile: new File([''], 'logo.png', { type: 'image/png' }),
       errorCorrectionLevel: 'H',
     };
     const results = validateExport(appearance, basePayload, 'png');
