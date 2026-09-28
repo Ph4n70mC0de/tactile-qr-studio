@@ -7,7 +7,7 @@ export { generatePayloadString };
 export { defaultAppearance };
 
 export function useQREditor() {
-  const [payload, setPayload] = useState<Payload>({ type: 'url', url: 'https://example.com' });
+  const [payload, setPayload] = useState<Payload>({ type: 'url', url: '' });
   const [appearance, setAppearance] = useState<QRAppearance>(defaultAppearance);
 
   const payloadString = useMemo(() => generatePayloadString(payload), [payload]);
@@ -45,7 +45,7 @@ export function useQREditor() {
   }, []);
 
   const reset = useCallback(() => {
-    setPayload({ type: 'url', url: 'https://example.com' });
+    setPayload({ type: 'url', url: '' });
     setAppearance(defaultAppearance);
   }, []);
 
