@@ -25,7 +25,7 @@ const baseAppearance: QRAppearance = {
   moduleStyle: 'square',
   finderStyle: 'square',
   errorCorrectionLevel: 'M',
-  logoUrl: '',
+  logoFile: null,
   logoSize: 0.4,
 };
 
@@ -87,7 +87,7 @@ describe('QRAppearanceForm accessibility', () => {
   });
 
   it('has no accessibility violations with logo URL', async () => {
-    const withLogo: QRAppearance = { ...baseAppearance, logoUrl: 'https://example.com/logo.png' };
+    const withLogo: QRAppearance = { ...baseAppearance, logoFile: new File([''], 'logo.png', { type: 'image/png' }) };
     const { container } = render(<QRAppearanceForm appearance={withLogo} onChange={vi.fn()} />);
     const results = await checkAxe(container);
     expect(results.violations).toEqual([]);

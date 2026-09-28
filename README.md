@@ -4,7 +4,7 @@ Design and generate QR codes with a Neumorphic editor.
 
 ## Overview
 
-QR Studio is a client-side React application for creating, customizing, and exporting QR codes. It runs entirely in the browser — no server, no API keys, and no external dependencies for QR generation.
+QR Studio is a client-side React application for creating, customizing, and exporting QR codes. It runs entirely in the browser: no server, no API keys, and no external dependencies for QR generation.
 
 ## Features
 
@@ -145,15 +145,15 @@ src/
 
 ## Technology Stack
 
-- React 19 — UI framework
-- TypeScript 5.8 — Type safety
-- Vite 6 — Build tooling and dev server
-- Tailwind CSS 4 — Styling
-- qr-code-styling — QR code generation
-- Lucide React — Icons
-- ESLint 9 — Linting
-- Vitest — Testing
-- @testing-library/react — Component testing
+- React 19: UI framework
+- TypeScript 5.8: Type safety
+- Vite 6: Build tooling and dev server
+- Tailwind CSS 4: Styling
+- qr-code-styling: QR code generation
+- Lucide React: Icons
+- ESLint 9: Linting
+- Vitest: Testing
+- @testing-library/react: Component testing
 
 ## License
 

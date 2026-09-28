@@ -12,7 +12,7 @@ const baseAppearance: QRAppearance = {
   moduleStyle: 'square',
   finderStyle: 'square',
   errorCorrectionLevel: 'M',
-  logoUrl: '',
+  logoFile: null,
   logoSize: 0.4,
 };
 
@@ -28,7 +28,7 @@ describe('QRAppearanceForm', () => {
     expect(screen.getByText('Pixel Style')).toBeInTheDocument();
     expect(screen.getByText('Corner Style')).toBeInTheDocument();
     expect(screen.getByText('Error Correction')).toBeInTheDocument();
-    expect(screen.getByLabelText('Center Logo URL (Optional)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Center Logo (Optional)')).toBeInTheDocument();
   });
 
   it('updates foreground color when color input changes', () => {
@@ -118,24 +118,25 @@ describe('QRAppearanceForm', () => {
     expect(onChange).toHaveBeenCalledWith({ errorCorrectionLevel: 'H' });
   });
 
-  it('updates logo URL when input changes', () => {
+  it('uploads logo when file is selected', () => {
     const onChange = vi.fn();
     render(<QRAppearanceForm appearance={baseAppearance} onChange={onChange} />);
 
-    const logoInput = screen.getByLabelText('Center Logo URL (Optional)');
-    fireEvent.change(logoInput, { target: { value: 'https://example.com/logo.png' } });
+    const file = new File([''], 'logo.png', { type: 'image/png' });
+    const input = document.getElementById('logo-file') as HTMLInputElement;
+    fireEvent.change(input, { target: { files: [file] } });
 
-    expect(onChange).toHaveBeenCalledWith({ logoUrl: 'https://example.com/logo.png' });
+    expect(onChange).toHaveBeenCalledWith({ logoFile: file });
   });
 
-  it('shows logo size slider when logo URL is present', () => {
-    const withLogo: QRAppearance = { ...baseAppearance, logoUrl: 'https://example.com/logo.png' };
+  it('shows logo size slider when logo file is present', () => {
+    const withLogo: QRAppearance = { ...baseAppearance, logoFile: new File([''], 'logo.png', { type: 'image/png' }) };
     render(<QRAppearanceForm appearance={withLogo} onChange={vi.fn()} />);
 
     expect(screen.getByText('Logo Size')).toBeInTheDocument();
   });
 
-  it('hides logo size slider when no logo URL', () => {
+  it('hides logo size slider when no logo file', () => {
     render(<QRAppearanceForm appearance={baseAppearance} onChange={vi.fn()} />);
 
     expect(screen.queryByText('Logo Size')).not.toBeInTheDocument();
@@ -143,7 +144,7 @@ describe('QRAppearanceForm', () => {
 
   it('updates logo size when slider changes and logo is present', () => {
     const onChange = vi.fn();
-    const withLogo: QRAppearance = { ...baseAppearance, logoUrl: 'https://example.com/logo.png' };
+    const withLogo: QRAppearance = { ...baseAppearance, logoFile: new File([''], 'logo.png', { type: 'image/png' }) };
     render(<QRAppearanceForm appearance={withLogo} onChange={onChange} />);
 
     const logoSizeSlider = screen.getByLabelText('Logo Size') as HTMLInputElement;

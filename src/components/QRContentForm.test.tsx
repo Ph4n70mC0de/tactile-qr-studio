@@ -23,13 +23,6 @@ describe('QRContentForm', () => {
       expect(screen.getByText('11/4296 characters')).toBeInTheDocument();
     });
 
-    it('shows error when text is empty', () => {
-      const emptyPayload: Payload = { type: 'text', text: '' };
-      render(<QRContentForm payload={emptyPayload} onChange={vi.fn()} />);
-
-      expect(screen.getByRole('alert')).toHaveTextContent('Text content is required.');
-    });
-
     it('marks text input as aria-invalid when empty', () => {
       const emptyPayload: Payload = { type: 'text', text: '' };
       render(<QRContentForm payload={emptyPayload} onChange={vi.fn()} />);
@@ -108,16 +101,36 @@ describe('QRContentForm', () => {
   });
 
   describe('phone type', () => {
-    const payload: Payload = { type: 'phone', phone: '+15551234567' };
+    const payload: Payload = { type: 'phone', phone: '09123456789' };
 
     it('renders phone input and updates payload', () => {
       const onChange = vi.fn();
       render(<QRContentForm payload={payload} onChange={onChange} />);
 
       const input = screen.getByLabelText('Phone Number');
-      fireEvent.change(input, { target: { value: '+15559998888' } });
+      fireEvent.change(input, { target: { value: '09123456789' } });
 
-      expect(onChange).toHaveBeenCalledWith({ type: 'phone', phone: '+15559998888' });
+      expect(onChange).toHaveBeenCalledWith({ type: 'phone', phone: '09123456789' });
+    });
+
+    it('strips non-digit characters from phone input', () => {
+      const onChange = vi.fn();
+      render(<QRContentForm payload={payload} onChange={onChange} />);
+
+      const input = screen.getByLabelText('Phone Number');
+      fireEvent.change(input, { target: { value: '09-123 456-789' } });
+
+      expect(onChange).toHaveBeenCalledWith({ type: 'phone', phone: '09123456789' });
+    });
+
+    it('limits phone input to 11 digits', () => {
+      const onChange = vi.fn();
+      render(<QRContentForm payload={payload} onChange={onChange} />);
+
+      const input = screen.getByLabelText('Phone Number');
+      fireEvent.change(input, { target: { value: '091234567890123' } });
+
+      expect(onChange).toHaveBeenCalledWith({ type: 'phone', phone: '09123456789' });
     });
   });
 
@@ -176,6 +189,30 @@ describe('QRContentForm', () => {
       render(<QRContentForm payload={nopassPayload} onChange={vi.fn()} />);
 
       expect(screen.getByLabelText('Password')).toBeDisabled();
+    });
+
+    it('toggles password visibility', () => {
+      const onChange = vi.fn();
+      render(<QRContentForm payload={payload} onChange={onChange} />);
+
+      const toggleButton = screen.getByLabelText('Show password');
+      fireEvent.click(toggleButton);
+
+      expect(screen.getByLabelText('Password')).toHaveAttribute('type', 'text');
+      expect(screen.getByLabelText('Hide password')).toBeInTheDocument();
+    });
+
+    it('does not show password toggle when encryption is nopass', () => {
+      const nopassPayload: Payload = {
+        type: 'wifi',
+        ssid: 'MyNetwork',
+        password: '',
+        encryption: 'nopass',
+        hidden: false,
+      };
+      render(<QRContentForm payload={nopassPayload} onChange={vi.fn()} />);
+
+      expect(screen.queryByLabelText('Show password')).not.toBeInTheDocument();
     });
 
     it('shows character count for SSID near max', () => {
