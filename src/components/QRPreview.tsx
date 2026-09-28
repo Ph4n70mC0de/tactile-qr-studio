@@ -18,13 +18,13 @@ interface QRPreviewProps {
   onInstanceReady?: (instance: QRCodeStyling) => void;
 }
 
-function buildOptions(data: string, appearance: QRAppearance): Options {
+function buildOptions(data: string, appearance: QRAppearance, logoImage?: string): Options {
   return {
     width: appearance.size,
     height: appearance.size,
     type: "svg" as DrawType,
     data: data || ' ',
-    image: appearance.logoUrl,
+    image: logoImage,
     margin: appearance.margin,
     qrOptions: {
       typeNumber: 0 as TypeNumber,
@@ -58,8 +58,29 @@ function buildOptions(data: string, appearance: QRAppearance): Options {
 export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps) {
   const ref = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
-  const options = useMemo(() => buildOptions(data, appearance), [data, appearance]);
+  const prevLogoImageRef = useRef<string | undefined>(undefined);
+
+  const logoImage = useMemo(() => {
+    if (!appearance.logoFile) return undefined;
+    return URL.createObjectURL(appearance.logoFile);
+  }, [appearance.logoFile]);
+
+  const options = useMemo(() => buildOptions(data, appearance, logoImage), [data, appearance, logoImage]);
   const isValid = useMemo(() => Boolean(data && data.trim().length > 0), [data]);
+
+  useEffect(() => {
+    const prev = prevLogoImageRef.current;
+    if (prev && prev !== logoImage) {
+      URL.revokeObjectURL(prev);
+    }
+    prevLogoImageRef.current = logoImage;
+
+    return () => {
+      if (prevLogoImageRef.current) {
+        URL.revokeObjectURL(prevLogoImageRef.current);
+      }
+    };
+  }, [logoImage]);
 
   const stableOnInstanceReady = useRef(onInstanceReady);
   useEffect(() => {
