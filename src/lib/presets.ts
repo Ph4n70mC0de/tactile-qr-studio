@@ -11,7 +11,7 @@ export const PRESETS: QRPreset[] = [
       moduleStyle: 'square',
       finderStyle: 'square',
       errorCorrectionLevel: 'M',
-      logoUrl: undefined,
+      logoFile: null,
     }
   },
   {
@@ -24,7 +24,7 @@ export const PRESETS: QRPreset[] = [
       moduleStyle: 'rounded',
       finderStyle: 'extra-rounded',
       errorCorrectionLevel: 'M',
-      logoUrl: undefined,
+      logoFile: null,
     }
   },
   {
@@ -37,7 +37,7 @@ export const PRESETS: QRPreset[] = [
       moduleStyle: 'square',
       finderStyle: 'square',
       errorCorrectionLevel: 'H',
-      logoUrl: undefined,
+      logoFile: null,
     }
   },
   {
@@ -50,7 +50,7 @@ export const PRESETS: QRPreset[] = [
       moduleStyle: 'dots',
       finderStyle: 'dot',
       errorCorrectionLevel: 'Q',
-      logoUrl: undefined,
+      logoFile: null,
     }
   },
   {
@@ -63,7 +63,7 @@ export const PRESETS: QRPreset[] = [
       moduleStyle: 'rounded',
       finderStyle: 'extra-rounded',
       errorCorrectionLevel: 'M',
-      logoUrl: undefined,
+      logoFile: null,
     }
   },
   {
@@ -76,7 +76,7 @@ export const PRESETS: QRPreset[] = [
       moduleStyle: 'rounded',
       finderStyle: 'extra-rounded',
       errorCorrectionLevel: 'Q',
-      logoUrl: undefined,
+      logoFile: null,
     }
   }
 ];
