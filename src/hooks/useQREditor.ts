@@ -1,46 +1,10 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Payload, QRAppearance, ContentType, QRPreset } from '../types';
+import { generatePayloadString } from '../domain/qrPayload';
+import { defaultAppearance } from '../domain/qrAppearance';
 
-const defaultAppearance: QRAppearance = {
-  size: 300,
-  margin: 10,
-  foregroundColor: '#000000',
-  backgroundColor: '#ffffff',
-  transparentBackground: false,
-  moduleStyle: 'square',
-  finderStyle: 'square',
-  errorCorrectionLevel: 'M',
-  logoSize: 0.4,
-};
-
-export function generatePayloadString(payload: Payload): string {
-  switch (payload.type) {
-    case 'text':
-      return payload.text;
-    case 'url': {
-      // Ensure it has a protocol
-      if (!payload.url) return '';
-      return /^https?:\/\//i.test(payload.url) ? payload.url : `https://${payload.url}`;
-    }
-    case 'email':
-      if (!payload.email) return '';
-      let mailto = `mailto:${payload.email}`;
-      const params = new URLSearchParams();
-      if (payload.subject) params.append('subject', payload.subject);
-      if (payload.body) params.append('body', payload.body);
-      const queryString = params.toString();
-      if (queryString) mailto += `?${queryString}`;
-      return mailto;
-    case 'phone':
-      return payload.phone ? `tel:${payload.phone}` : '';
-    case 'wifi':
-      if (!payload.ssid) return '';
-      const escape = (str: string) => str.replace(/([\\;,":])/g, '\\$1');
-      return `WIFI:S:${escape(payload.ssid)};T:${payload.encryption};P:${payload.password ? escape(payload.password) : ''};H:${payload.hidden ? 'true' : 'false'};;`;
-    default:
-      return '';
-  }
-}
+export { generatePayloadString };
+export { defaultAppearance };
 
 export function useQREditor() {
   const [payload, setPayload] = useState<Payload>({ type: 'url', url: 'https://example.com' });
@@ -48,8 +12,8 @@ export function useQREditor() {
 
   const payloadString = useMemo(() => generatePayloadString(payload), [payload]);
 
-  const updatePayload = useCallback((updates: Partial<Payload>) => {
-    setPayload((prev) => ({ ...prev, ...updates } as Payload));
+  const updatePayload = useCallback((newPayload: Payload) => {
+    setPayload(newPayload);
   }, []);
 
   const changeType = useCallback((type: ContentType) => {
@@ -61,7 +25,7 @@ export function useQREditor() {
         setPayload({ type: 'url', url: '' });
         break;
       case 'email':
-        setPayload({ type: 'email', email: '' });
+        setPayload({ type: 'email', email: '', subject: '', body: '' });
         break;
       case 'phone':
         setPayload({ type: 'phone', phone: '' });
