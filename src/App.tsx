@@ -244,7 +244,7 @@ export default function App() {
             </Card>
           </div>
 
-          <div className="lg:col-span-5 xl:col-span-4 space-y-8 sticky top-8">
+          <div className="lg:col-span-5 xl:col-span-4 space-y-8 lg:sticky lg:top-8">
             <QRPreview
               data={payloadString}
               appearance={appearance}

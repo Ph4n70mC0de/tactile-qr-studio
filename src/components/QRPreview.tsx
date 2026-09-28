@@ -18,57 +18,62 @@ interface QRPreviewProps {
   onInstanceReady?: (instance: QRCodeStyling) => void;
 }
 
+function buildOptions(data: string, appearance: QRAppearance): Options {
+  return {
+    width: appearance.size,
+    height: appearance.size,
+    type: "svg" as DrawType,
+    data: data || ' ',
+    image: appearance.logoUrl,
+    margin: appearance.margin,
+    qrOptions: {
+      typeNumber: 0 as TypeNumber,
+      mode: "Byte" as Mode,
+      errorCorrectionLevel: appearance.errorCorrectionLevel as ErrorCorrectionLevel
+    },
+    imageOptions: {
+      hideBackgroundDots: true,
+      imageSize: appearance.logoSize,
+      margin: 5,
+      crossOrigin: "anonymous"
+    },
+    dotsOptions: {
+      color: appearance.foregroundColor,
+      type: (appearance.moduleStyle === 'dots' ? 'dots' : appearance.moduleStyle === 'rounded' ? 'rounded' : 'square') as DotType
+    },
+    backgroundOptions: {
+      color: appearance.transparentBackground ? 'transparent' : appearance.backgroundColor,
+    },
+    cornersSquareOptions: {
+      color: appearance.foregroundColor,
+      type: (appearance.finderStyle === 'dot' ? 'dot' : appearance.finderStyle === 'extra-rounded' ? 'extra-rounded' : 'square') as CornerSquareType
+    },
+    cornersDotOptions: {
+      color: appearance.foregroundColor,
+      type: (appearance.finderStyle === 'dot' ? 'dot' : appearance.finderStyle === 'extra-rounded' ? 'dot' : 'square') as CornerDotType
+    }
+  };
+}
+
 export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps) {
   const ref = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
-
+  const options = useMemo(() => buildOptions(data, appearance), [data, appearance]);
   const isValid = useMemo(() => Boolean(data && data.trim().length > 0), [data]);
+
+  const stableOnInstanceReady = useRef(onInstanceReady);
+  useEffect(() => {
+    stableOnInstanceReady.current = onInstanceReady;
+  });
 
   useEffect(() => {
     const container = ref.current;
-    const options: Options = {
-      width: appearance.size,
-      height: appearance.size,
-      type: "svg" as DrawType,
-      data: data || ' ',
-      image: appearance.logoUrl,
-      margin: appearance.margin,
-      qrOptions: {
-        typeNumber: 0 as TypeNumber,
-        mode: "Byte" as Mode,
-        errorCorrectionLevel: appearance.errorCorrectionLevel as ErrorCorrectionLevel
-      },
-      imageOptions: {
-        hideBackgroundDots: true,
-        imageSize: appearance.logoSize,
-        margin: 5,
-        crossOrigin: "anonymous"
-      },
-      dotsOptions: {
-        color: appearance.foregroundColor,
-        type: (appearance.moduleStyle === 'dots' ? 'dots' : appearance.moduleStyle === 'rounded' ? 'rounded' : 'square') as DotType
-      },
-      backgroundOptions: {
-        color: appearance.transparentBackground ? 'transparent' : appearance.backgroundColor,
-      },
-      cornersSquareOptions: {
-        color: appearance.foregroundColor,
-        type: (appearance.finderStyle === 'dot' ? 'dot' : appearance.finderStyle === 'extra-rounded' ? 'extra-rounded' : 'square') as CornerSquareType
-      },
-      cornersDotOptions: {
-        color: appearance.foregroundColor,
-        type: (appearance.finderStyle === 'dot' ? 'dot' : appearance.finderStyle === 'extra-rounded' ? 'dot' : 'square') as CornerDotType
-      }
-    };
+    if (!container) return;
 
     if (!qrCode.current) {
       qrCode.current = new QRCodeStyling(options);
-      if (container) {
-        qrCode.current.append(container);
-      }
-      if (onInstanceReady) {
-        onInstanceReady(qrCode.current);
-      }
+      qrCode.current.append(container);
+      stableOnInstanceReady.current?.(qrCode.current);
     } else {
       qrCode.current.update(options);
     }
@@ -78,13 +83,21 @@ export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps)
         container.innerHTML = '';
       }
     };
-  }, [data, appearance, onInstanceReady]);
+  }, [options]);
+
+  useEffect(() => {
+    return () => {
+      if (qrCode.current) {
+        qrCode.current = null;
+      }
+    };
+  }, []);
 
   return (
     <Card className="flex flex-col items-center justify-center relative min-h-[400px]">
       <div
         ref={ref}
-        className={`w-full items-center justify-center ${isValid ? 'flex' : 'hidden'}`}
+        className={`w-full flex items-center justify-center ${isValid ? 'flex' : 'hidden'}`}
       />
       {!isValid && (
         <div className="absolute inset-0 flex items-center justify-center flex-col text-neu-text-muted">
@@ -94,3 +107,4 @@ export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps)
     </Card>
   );
 }
+
