@@ -1,39 +1,24 @@
 # Tactile QR Studio
 
-Design and generate custom QR codes with a beautiful Neumorphic editor.
+Design and generate QR codes with a Neumorphic editor.
 
 ## Overview
 
-QR Studio is a client-side React application for creating, customizing, and exporting QR codes. It runs entirely in the browser — no server, no API keys, no external dependencies for QR generation.
+QR Studio is a client-side React application for creating, customizing, and exporting QR codes. It runs entirely in the browser — no server, no API keys, and no external dependencies for QR generation.
 
-### Features
+## Features
 
-- **Five content types**: Text, URL, Email, Phone, Wi-Fi
-- **Live preview**: Real-time QR code rendering using `qr-code-styling`
-- **Full appearance customization**:
-  - Foreground and background colors
-  - Transparent background support
-  - Pixel styles (square, dots, rounded)
-  - Corner/finder styles (square, dot, extra-rounded)
-  - Error correction levels (L, M, Q, H)
-  - Custom QR size (128px – 1024px)
-  - Quiet zone margin control
-  - Optional center logo with size control
-- **Design presets**: One-click appearance themes (Classic, Soft, High Contrast, Minimal, Dark Mode, Accent)
-- **Built-in validation**:
-  - Input validation for each content type
-  - Contrast ratio checking (WCAG 4.5:1 minimum)
-  - Logo size and error-correction guidance
-  - Payload density warnings
-  - Logo URL validation
-- **Export**: PNG and SVG with safe auto-generated filenames
-- **Accessibility**:
-  - Keyboard navigation
-  - ARIA labels and roles
-  - Visible focus indicators
-  - Reduced motion support
-  - Screen reader announcements
-- **Responsive design**: Works on mobile, tablet, and desktop
+Five content types: text, URL, email, phone, and Wi-Fi. Live preview renders QR codes in real time using `qr-code-styling`.
+
+Appearance options include foreground and background colors, transparent backgrounds, pixel styles (square, dots, rounded), corner/finder styles (square, dot, extra-rounded), error correction levels (L, M, Q, H), custom QR sizes from 128px to 1024px, quiet zone margin control, and an optional center logo with size control.
+
+Design presets offer one-click appearance themes: Classic, Soft, High Contrast, Minimal, Dark Mode, and Accent.
+
+Validation includes input checks for each content type, contrast ratio checking (WCAG 4.5:1 minimum), logo size and error-correction guidance, payload density warnings, and logo URL validation.
+
+Export formats are PNG and SVG with auto-generated filenames.
+
+Accessibility features include keyboard navigation, ARIA labels and roles, visible focus indicators, reduced motion support, and screen reader announcements. The design is responsive and works on mobile, tablet, and desktop.
 
 ## Getting Started
 
@@ -56,7 +41,7 @@ Start the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app in your browser.
+Then open [http://localhost:3000](http://localhost:3000) to view the app in your browser.
 
 ### Build
 
@@ -160,16 +145,16 @@ src/
 
 ## Technology Stack
 
-- **React 19** — UI framework
-- **TypeScript 5.8** — Type safety
-- **Vite 6** — Build tooling and dev server
-- **Tailwind CSS 4** — Styling
-- **qr-code-styling** — QR code generation
-- **Lucide React** — Icons
-- **ESLint 9** — Linting
-- **Vitest** — Testing
-- **@testing-library/react** — Component testing
+- React 19 — UI framework
+- TypeScript 5.8 — Type safety
+- Vite 6 — Build tooling and dev server
+- Tailwind CSS 4 — Styling
+- qr-code-styling — QR code generation
+- Lucide React — Icons
+- ESLint 9 — Linting
+- Vitest — Testing
+- @testing-library/react — Component testing
 
 ## License
 
-MIT
+[MIT](./LICENSE)
