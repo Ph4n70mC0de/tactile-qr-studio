@@ -21,7 +21,7 @@ React 19 + TypeScript + Vite + Tailwind CSS QR editor.
 
 - TypeScript: `npm run typecheck` must pass with 0 errors
 - ESLint: `npm run lint` must pass with 0 errors (warnings acceptable)
-- Tests: `npm run test` must pass (124 tests)
+- Tests: `npm run test` must pass (170 tests)
 - Build: `npm run build` must complete in <120s
 
 ## Stack
