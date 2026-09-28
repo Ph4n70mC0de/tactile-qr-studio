@@ -2,5 +2,5 @@
   "name": "QR Studio",
   "description": "Design and generate custom QR codes with a beautiful Neumorphic editor.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }
