@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import QRCodeStyling, {
   DrawType,
   TypeNumber,
@@ -7,7 +7,6 @@ import QRCodeStyling, {
   DotType,
   CornerSquareType,
   CornerDotType,
-  Extension,
   Options
 } from 'qr-code-styling';
 import { QRAppearance } from '../types';
@@ -22,15 +21,16 @@ interface QRPreviewProps {
 export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps) {
   const ref = useRef<HTMLDivElement>(null);
   const qrCode = useRef<QRCodeStyling | null>(null);
-  const [isValid, setIsValid] = useState(true);
+
+  const isValid = useMemo(() => Boolean(data && data.trim().length > 0), [data]);
 
   useEffect(() => {
-    // Generate valid qr-code-styling configuration
+    const container = ref.current;
     const options: Options = {
       width: appearance.size,
       height: appearance.size,
       type: "svg" as DrawType,
-      data: data || ' ', // Provide fallback space to prevent crash on empty
+      data: data || ' ',
       image: appearance.logoUrl,
       margin: appearance.margin,
       qrOptions: {
@@ -63,8 +63,8 @@ export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps)
 
     if (!qrCode.current) {
       qrCode.current = new QRCodeStyling(options);
-      if (ref.current) {
-        qrCode.current.append(ref.current);
+      if (container) {
+        qrCode.current.append(container);
       }
       if (onInstanceReady) {
         onInstanceReady(qrCode.current);
@@ -72,14 +72,19 @@ export function QRPreview({ data, appearance, onInstanceReady }: QRPreviewProps)
     } else {
       qrCode.current.update(options);
     }
-    setIsValid(!!data && data.trim().length > 0);
+
+    return () => {
+      if (container) {
+        container.innerHTML = '';
+      }
+    };
   }, [data, appearance, onInstanceReady]);
 
   return (
     <Card className="flex flex-col items-center justify-center relative min-h-[400px]">
-      <div 
-        ref={ref} 
-        className={`w-full items-center justify-center ${isValid ? 'flex' : 'hidden'}`} 
+      <div
+        ref={ref}
+        className={`w-full items-center justify-center ${isValid ? 'flex' : 'hidden'}`}
       />
       {!isValid && (
         <div className="absolute inset-0 flex items-center justify-center flex-col text-neu-text-muted">
